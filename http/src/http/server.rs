@@ -31,11 +31,18 @@ fn read_to_crlf(stream: &mut TcpStream) -> String {
         println!("read {} bytes", n)
     }
 
-    let s = String::from_str(str::from_utf8(buffer).unwrap());
+    let s: &str = str::from_utf8(buffer).unwrap();
+    let string = String::from_str(s);
     println!("------MESSAGE------");
     println!("{}", s);
     println!("--------END--------\n\n");
-    s
+
+    let headers = parse_headers(s);
+    for (k, v) in headers.iter() {
+        println!("Key: [{}]\tValue: [{}]", k, v)
+    }
+
+    string
 }
 
 fn parse_headers(headers: &str) -> HashMap<&str, &str> {
@@ -44,8 +51,8 @@ fn parse_headers(headers: &str) -> HashMap<&str, &str> {
         let i: Option<usize> = utils::contains(l, ':');
         match i {
             Some(n) => {
-                let k = &l[..n];
-                let v = &l[n+1..];
+                let k = l[..n].trim();
+                let v = l[n+1..].trim();
                 keystore.insert(k, v);
             },
             None(..) => {}
