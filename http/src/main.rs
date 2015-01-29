@@ -14,7 +14,7 @@ fn main() {
             Err(..) => {},
             Ok(s)   => {
                 Thread::spawn(move || {
-                    http::server::new_conn();
+                    http::server::new_conn(s.clone());
                 });
             }
 
