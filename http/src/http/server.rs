@@ -7,6 +7,12 @@ use std::collections::HashMap;
 
 use utils;
 
+struct HTTPMessage {
+    request_line: String,
+    headers: String,
+    data: String,
+}
+
 pub fn print_stuff() {
     println!("module fuck yeah")
 }
@@ -16,18 +22,9 @@ pub fn get_http_stream() -> TcpListener {
 }
 
 pub fn new_conn(mut stream: TcpStream) {
-    let msg: String = read_to_crlf(&mut stream);
+    let msg: String = read_to_string(&mut stream);
 
-    let (rqline, headers, data) = split_request(msg.as_slice());
-
-    println!("Request line:");
-    println!("{}", rqline);
-    println!("Headers:");
-    println!("{}", headers);
-    println!("Data:");
-    println!("{}", data);
-    let hdr_map = parse_headers(headers);
-
+    let request: HTTPMessage = split_message(msg.as_slice());
 
     let hdr = format!("HTTP/1.1 200 OK\r\n\
                        halla gutta \r\n\
@@ -38,16 +35,20 @@ pub fn new_conn(mut stream: TcpStream) {
 
 /// Takes a HTTP request as parameter and splits it into
 /// (request line, headers, data).
-fn split_request(string: &str) -> (&str, &str, &str) {
+fn split_message(string: &str) -> HTTPMessage {
     let nl_index = utils::contains(string, '\n').unwrap();
     let requestline: &str = &string[..nl_index];
     let mut it = string[nl_index+1..].split_str("\r\n\r\n");
     let headers = it.next().unwrap();
     let data = it.next().unwrap();
-    (requestline, headers, data)
+    HTTPMessage {
+        request_line: String::from_str(requestline),
+        headers: String::from_str(headers),
+        data: String::from_str(data),
+    }
 }
 
-fn read_to_crlf(stream: &mut TcpStream) -> String {
+fn read_to_string(stream: &mut TcpStream) -> String {
     const BUFFER_SIZE: usize = 4096;
     let mut buffer: &mut [u8; BUFFER_SIZE] = &mut [0; BUFFER_SIZE];
     let n = stream.read(buffer).unwrap();
