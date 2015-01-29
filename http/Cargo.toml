@@ -1,0 +1,9 @@
+[package]
+
+name = "http"
+version = "0.0.1"
+authors = ["Martin Thoresen <martinhath@gmail.com>"]
+
+[lib]
+name = "http"
+path = "src/http/mod.rs"
