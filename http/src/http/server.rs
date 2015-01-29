@@ -18,14 +18,33 @@ pub fn get_http_stream() -> TcpListener {
 pub fn new_conn(mut stream: TcpStream) {
     let msg: String = read_to_crlf(&mut stream);
 
-    println!("------MESSAGE------");
-    println!("{}", msg);
-    println!("--------END--------\n\n");
+    let (rqline, headers, data) = split_request(msg.as_slice());
 
-    let headers = parse_headers(msg.as_slice());
-    for (k, v) in headers.iter() {
-        println!("Key: [{:^20}]\tValue: [{}]", k, v)
-    }
+    println!("Request line:");
+    println!("{}", rqline);
+    println!("Headers:");
+    println!("{}", headers);
+    println!("Data:");
+    println!("{}", data);
+    let hdr_map = parse_headers(headers);
+
+
+    let hdr = format!("HTTP/1.1 200 OK\r\n\
+                       halla gutta \r\n\
+                       hue\r\n\r\n");
+    stream.write_str(hdr.as_slice());
+    stream.write_str("halla gutta hva skjer a?\r\n");
+}
+
+/// Takes a HTTP request as parameter and splits it into
+/// (request line, headers, data).
+fn split_request(string: &str) -> (&str, &str, &str) {
+    let nl_index = utils::contains(string, '\n').unwrap();
+    let requestline: &str = &string[..nl_index];
+    let mut it = string[nl_index+1..].split_str("\r\n\r\n");
+    let headers = it.next().unwrap();
+    let data = it.next().unwrap();
+    (requestline, headers, data)
 }
 
 fn read_to_crlf(stream: &mut TcpStream) -> String {
