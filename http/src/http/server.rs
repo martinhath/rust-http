@@ -17,7 +17,15 @@ pub fn get_http_stream() -> TcpListener {
 
 pub fn new_conn(mut stream: TcpStream) {
     let msg: String = read_to_crlf(&mut stream);
-    println!("{}", msg)
+
+    println!("------MESSAGE------");
+    println!("{}", msg);
+    println!("--------END--------\n\n");
+
+    let headers = parse_headers(msg.as_slice());
+    for (k, v) in headers.iter() {
+        println!("Key: [{:^20}]\tValue: [{}]", k, v)
+    }
 }
 
 fn read_to_crlf(stream: &mut TcpStream) -> String {
@@ -32,17 +40,7 @@ fn read_to_crlf(stream: &mut TcpStream) -> String {
     }
 
     let s: &str = str::from_utf8(buffer).unwrap();
-    let string = String::from_str(s);
-    println!("------MESSAGE------");
-    println!("{}", s);
-    println!("--------END--------\n\n");
-
-    let headers = parse_headers(s);
-    for (k, v) in headers.iter() {
-        println!("Key: [{}]\tValue: [{}]", k, v)
-    }
-
-    string
+    String::from_str(s)
 }
 
 fn parse_headers(headers: &str) -> HashMap<&str, &str> {
