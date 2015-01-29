@@ -10,3 +10,6 @@ pub fn contains(string: &str, chr: char) -> Option<usize> {
     }
     None
 }
+
+/*pub fn get_date_formatted() -> String {*/
+/*}*/

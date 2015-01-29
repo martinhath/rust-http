@@ -1,6 +1,6 @@
-#![allow(unstable)]
+#![feature(io)]
 
-use std::io::{TcpListener, TcpStream};
+use std::old_io::net::tcp::{TcpListener, TcpStream};
 use std::str;
 
 use std::collections::HashMap;

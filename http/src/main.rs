@@ -1,8 +1,8 @@
-#![allow(unstable)]
+#![feature(io)]
 
 extern crate http;
 
-use std::io::{Listener, Acceptor};
+use std::old_io::{Listener, Acceptor};
 use std::thread::Thread;
 
 fn main() {
