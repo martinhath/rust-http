@@ -1,4 +1,5 @@
 #![feature(io)]
+#![feature(core)]
 
 extern crate http;
 
